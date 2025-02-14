@@ -2,6 +2,11 @@ export interface Position {
   x: number;
   y: number;
 }
+export interface UploadedImage {
+  id: string;
+  url: string;
+  name: string;
+}
 
 export interface DraggableItemProps {
   initialX: number;
