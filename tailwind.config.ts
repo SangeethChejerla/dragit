@@ -1,25 +1,25 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from 'tailwindcss';
+
+export default {
   darkMode: ['class'],
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    'app/**/*.{ts,tsx}',
-    'components/**/*.{ts,tsx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-geist-sans)'],
-        mono: ['var(--font-geist-mono)'],
-      },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -27,10 +27,6 @@ module.exports = {
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
@@ -40,13 +36,19 @@ module.exports = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
         },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
         },
       },
       borderRadius: {
@@ -54,57 +56,7 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-      keyframes: {
-        wobbleLeft: {
-          '0%, 100%': {
-            transform: 'translate(-50%, -50%) scale(1.25) rotate(0deg)',
-          },
-          '50%': {
-            transform:
-              'translate(-50%, -50%) scale(1.25) rotate(var(--tilt-angle))',
-          },
-        },
-        wobbleRight: {
-          '0%, 100%': {
-            transform: 'translate(-50%, -50%) scale(1.25) rotate(0deg)',
-          },
-          '50%': {
-            transform:
-              'translate(-50%, -50%) scale(1.25) rotate(var(--tilt-angle))',
-          },
-        },
-        wobbleUp: {
-          '0%, 100%': {
-            transform: 'translate(-50%, -50%) scale(1.25) rotate(0deg)',
-          },
-          '50%': {
-            transform:
-              'translate(-50%, -50%) scale(1.25) rotate(var(--tilt-angle))',
-          },
-        },
-        wobbleDown: {
-          '0%, 100%': {
-            transform: 'translate(-50%, -50%) scale(1.25) rotate(0deg)',
-          },
-          '50%': {
-            transform:
-              'translate(-50%, -50%) scale(1.25) rotate(var(--tilt-angle))',
-          },
-        },
-        lightWobble: {
-          '0%, 100%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
-          '25%': { transform: 'translate(-50%, -50%) rotate(-3deg)' },
-          '75%': { transform: 'translate(-50%, -50%) rotate(3deg)' },
-        },
-      },
-      animation: {
-        wobbleLeft: 'wobbleLeft 0.3s ease-in-out',
-        wobbleRight: 'wobbleRight 0.3s ease-in-out',
-        wobbleUp: 'wobbleUp 0.3s ease-in-out',
-        wobbleDown: 'wobbleDown 0.3s ease-in-out',
-        lightWobble: 'lightWobble 0.3s ease-in-out',
-      },
     },
   },
   plugins: [require('tailwindcss-animate')],
-};
+} satisfies Config;

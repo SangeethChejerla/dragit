@@ -1,107 +1,145 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-import { DraggableItem } from '@/components/DraggableItem';
-import { ImageUploader } from '@/components/ImageUploader';
-import type { UploadedImage } from '@/types';
+import AxisLabel from '@/components/AxisLabel';
+import DownloadButton from '@/components/DownloadButton';
+import DraggableItem from '@/components/DraggableItem';
+import ImageUpload from '@/components/ImageUpload';
+import TagInput from '@/components/TagInput';
+import { motion } from 'framer-motion';
 
 export default function MarketMap() {
-  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [items, setItems] = useState<
+    Array<{
+      id: string;
+      type: 'tag' | 'image';
+      content: string;
+      x: number;
+      y: number;
+      color: string;
+    }>
+  >([]);
+  const [axisLabels, setAxisLabels] = useState({
+    top: 'Better DX',
+    bottom: 'Worse DX',
+    left: 'Less cost-efficient',
+    right: 'More cost-efficient',
+  });
+  const mapRef = useRef<HTMLDivElement>(null);
 
-  const handleImageUpload = (file: File) => {
-    const imageUrl = URL.createObjectURL(file);
-    const newImage: UploadedImage = {
-      id: `image-${Date.now()}`,
-      url: imageUrl,
-      name: file.name,
-    };
-    setUploadedImages((prev) => [...prev, newImage]);
+  const addTag = (tag: string, color: string) => {
+    setItems((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        type: 'tag',
+        content: tag,
+        x: 50,
+        y: 50,
+        color,
+      },
+    ]);
+  };
+
+  const addImage = (imageUrl: string) => {
+    setItems((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        type: 'image',
+        content: imageUrl,
+        x: 50,
+        y: 50,
+        color: 'transparent',
+      },
+    ]);
+  };
+
+  const updateItemPosition = (id: string, x: number, y: number) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, x, y } : item))
+    );
+  };
+
+  const updateAxisLabel = (
+    position: 'top' | 'bottom' | 'left' | 'right',
+    value: string
+  ) => {
+    setAxisLabels((prev) => ({ ...prev, [position]: value }));
   };
 
   return (
     <div
-      className={`min-h-screen w-full bg-black flex flex-col items-center p-8 ${GeistSans.variable} ${GeistMono.variable} font-sans`}
+      className={`min-h-screen w-full bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center p-8 `}
     >
-      <style jsx global>{`
-        body.dragging * {
-          cursor: none !important;
-        }
-      `}</style>
-
-      {/* Image Upload Section */}
-      <div className="w-full max-w-md mb-8">
-        <ImageUploader onImageUpload={handleImageUpload} />
-      </div>
-
-      {/* Market Map */}
-      <div className="relative w-full max-w-3xl aspect-square bg-black text-white">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 text-4xl font-bold text-white"
+      >
+        Market Map Creator
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mb-6 flex flex-wrap gap-4 justify-center"
+      >
+        <TagInput onAddTag={addTag} />
+        <ImageUpload onAddImage={addImage} />
+        <DownloadButton targetRef={mapRef} />
+      </motion.div>
+      <motion.div
+        ref={mapRef}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="relative w-full max-w-4xl aspect-square p-12 bg-white rounded-2xl shadow-2xl"
+      >
         {/* Axes */}
-        <div className="absolute inset-8 flex items-center justify-center">
-          <div className="w-[2px] h-full bg-gray-500" />
-          <div className="absolute w-full h-[2px] bg-gray-500" />
+        <div className="absolute inset-12 flex items-center justify-center">
+          <div className="w-[2px] h-full bg-gray-200" />
+          <div className="absolute w-full h-[2px] bg-gray-200" />
         </div>
 
         {/* Axis Labels */}
-        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-          <div className="text-center text-lg -mt-8 text-gray-500">BANGER</div>
-          <div className="text-center text-lg -mb-8 text-gray-500">
-            NON-BANGER
-          </div>
-        </div>
-        <div className="absolute inset-0 flex justify-between items-center pointer-events-none">
-          <div className="text-lg pl-4 text-gray-500">NOT CREATIVE</div>
-          <div className="text-lg pr-4 text-gray-500">CREATIVE</div>
-        </div>
+        <AxisLabel
+          position="top"
+          value={axisLabels.top}
+          onChange={updateAxisLabel}
+        />
+        <AxisLabel
+          position="bottom"
+          value={axisLabels.bottom}
+          onChange={updateAxisLabel}
+        />
+        <AxisLabel
+          position="left"
+          value={axisLabels.left}
+          onChange={updateAxisLabel}
+        />
+        <AxisLabel
+          position="right"
+          value={axisLabels.right}
+          onChange={updateAxisLabel}
+        />
 
         {/* Draggable Items */}
-        <div className="absolute inset-0">
-          {/* Pre-defined labels */}
+        {items.map((item) => (
           <DraggableItem
-            initialX={20}
-            initialY={20}
-            color="#6AACF8"
-            id="item-1"
-          >
-            TikTok
-          </DraggableItem>
-          <DraggableItem
-            initialX={80}
-            initialY={20}
-            color="#6CDA76"
-            id="item-2"
-          >
-            YouTube
-          </DraggableItem>
-          <DraggableItem
-            initialX={20}
-            initialY={80}
-            color="#F2AB3C"
-            id="item-3"
-          >
-            Instagram
-          </DraggableItem>
-          <DraggableItem
-            initialX={80}
-            initialY={80}
-            color="#8955DD"
-            id="item-4"
-          >
-            Twitter
-          </DraggableItem>
-
-          {/* Uploaded images */}
-          {uploadedImages.map((image, index) => (
-            <DraggableItem
-              key={image.id}
-              id={image.id}
-              initialX={50}
-              initialY={50}
-              imageUrl={image.url}
-            />
-          ))}
-        </div>
-      </div>
+            key={item.id}
+            id={item.id}
+            type={item.type}
+            content={item.content}
+            initialX={item.x}
+            initialY={item.y}
+            color={item.color}
+            onPositionChange={updateItemPosition}
+          />
+        ))}
+      </motion.div>
     </div>
   );
 }
